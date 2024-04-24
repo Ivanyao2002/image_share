@@ -12,8 +12,8 @@ const {photoSchema, commentSchema, userSchema} = schemas
 
 mongoose.connect(db).then(() => console.log('Mongodb Connected'))
 
-userSchema.statics.findByCredentials = async function (username) {
-    return this.findOne({ username});
+userSchema.statics.findByCredentials = async function (email) {
+    return this.findOne({ email});
 };
 
 // Générer un jeton d'authentification (token) en utilisant une bibliothèque de génération de jetons comme jsonwebtoken
@@ -25,7 +25,7 @@ userSchema.methods.generateAuthToken = async function () {
     return token;
   };
   
-
+// Création des modèles
 const User = mongoose.model('User', userSchema);
 const Photo = mongoose.model('Photo', photoSchema);
 const Comment = mongoose.model('Comment', commentSchema);

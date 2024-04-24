@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+	<html lang="fr">
+    <%- include ('./partials/head') %>    
+	<body>
+		<%- include ('./partials/header') %>
+
+		<div class="container ">
+			<h1><%= title %></h1>
+			<br>
+			<div id="login">
+				<form method="post" action="/register" enctype="multipart/form-data">
+                    <legend class="text-center">Veuillez vous enregistrer</legend>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="username" id="username" placeholder="name@">
+                        <label for="username">Nom d'utilisateur</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com">
+                        <label for="email">Adresse Email</label>
+                    </div>
+                    <div class="form-floating">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                        <label for="password">Mot de passe</label>
+                    </div>
+                    <div>
+                        <label for="formFileLg" class="form-label">Choisir une image</label>
+                        <input class="form-control form-control-lg" id="avatar" name="avatar" accept="image/*" type="file">
+                      </div>
+					
+					<button type="submit" class="btn btn-outline-primary  m-3 w-25">Connexion</button>
+				</form>
+			</div>
+
+		</div>
+
+		<footer>
+			<%- include ('./partials/footer') %>
+		</footer>
+    </body>
+</html>
