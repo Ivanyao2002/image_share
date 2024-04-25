@@ -8,11 +8,11 @@
 			<h1><%= title %></h1>
 			<br>
 			<div id="login">
-				<form>
+				<form method="post" action="/login">
                     <legend class="text-center">Veuillez saisir vos identifiants</legend>
                     <div class="form-floating mb-3">
-                        <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com">
-                        <label for="email">Adresse Email</label>
+                        <input type="username" class="form-control" name="username" id="username" placeholder="username">
+                        <label for="username">Nom d'utilisateur</label>
                     </div>
                     <div class="form-floating">
                         <input type="password" class="form-control" name="password" id="password" placeholder="Password">
@@ -28,8 +28,8 @@
 		<footer>
 			<%- include ('./partials/footer') %>
 		</footer>
-		<script>
-			var form = document.querySelector('form');
+    	<script>
+			/*var form = document.querySelector('form');
 			form.addEventListener("submit", loginUser);	
             
             var loginArea = document.querySelector('#login');
@@ -155,7 +155,7 @@
                 .catch(err => {
                     console.error('makeRequestWithToken err', err);
                 });
-            }
-		</script>
+            }*/
+		</script> 
 	</body>
 </html>

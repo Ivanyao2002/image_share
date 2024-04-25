@@ -14,8 +14,8 @@ const userSchema = new Schema({
   
   // Schéma Photo
   const photoSchema = new Schema({
-    titre: { type: String, required: true },
-    description: { type: String },
+    title: { type: String, required: true },
+    //description: { type: String },
     imageUrl: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

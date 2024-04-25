@@ -25,7 +25,9 @@
                     <div>
                         <label for="formFileLg" class="form-label">Choisir une image</label>
                         <input class="form-control form-control-lg" id="avatar" name="avatar" accept="image/*" type="file">
-                      </div>
+                    </div>
+
+                    <div class="error-container"></div>
 					
 					<button type="submit" class="btn btn-outline-primary  m-3 w-25">Connexion</button>
 				</form>
@@ -36,5 +38,23 @@
 		<footer>
 			<%- include ('./partials/footer') %>
 		</footer>
+
+        <script>
+            const usernameInput = document.querySelector('#username');
+            const errorContainer = document.querySelector('.error-container');
+
+            usernameInput.addEventListener('keyup', () => {
+            const username = usernameInput.value.trim(); //La méthode trim() est utilisée pour supprimer les espaces vides au début et à la fin de la valeur saisie
+            if (username.length < 3 || username.length > 20) {
+                errorContainer.textContent = 'Le nom d\'utilisateur doit comporter entre 3 et 20 caractères';
+                usernameInput.style.color = "red";
+                //usernameInput.classList.add('error');
+            } else {
+                errorContainer.textContent = '';
+                usernameInput.style.color = "green";
+                //usernameInput.classList.remove('error');
+            }
+            });
+        </script>
     </body>
 </html>

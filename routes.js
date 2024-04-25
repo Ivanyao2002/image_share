@@ -6,8 +6,20 @@ import commentController from './controllers/commentController.js';
 
 const Router = express.Router()
 const {register, login, getLogin, getRegister} = userController
+const {getAllPhotos, addPhoto} = photoController
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "./public/uploads/"); // Répertoire de destination pour les fichiers téléchargés
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Math.round(Math.random() * 100); // On génère des nombres aléatoire pour completer la fin du fichier
+      cb(null, file.fieldname + '_' + uniqueSuffix); // Nom des fichiers téléchargés
+    },
+  });
+
 const upload = multer({
-    dest: 'uploads/', // Répertoire de destination pour les fichiers téléchargés
+    storage: storage, // Répertoire de destination pour les fichiers téléchargés
   });
 
 Router.get('/', (req, res) => {
@@ -15,19 +27,22 @@ Router.get('/', (req, res) => {
 })
 
 // Routes pour les utilisateurs
-Router.post('/register',upload.single('avatar'), register);
+Router.post('/register', upload.single('avatar'), register);
 Router.post('/login', login);
 Router.get('/login', getLogin)
 Router.get('/register', getRegister)
+
+// Routes pour les photos
+Router.post('/photos', upload.single('imageUrl'), addPhoto); 
+Router.get('/photos', getAllPhotos);
+
 /*
 Router.get('/users', userController.getAllUsers);
 Router.get('/users/:id', userController.getUser);
 Router.put('/users/:id', userController.updateUser);
 Router.delete('/users/:id', userController.deleteUser);
 
-// Routes pour les photos
-Router.post('/photos', photoController.createPhoto); 
-Router.get('/photos', photoController.getAllPhotos);
+
 Router.get('/photos/:id', photoController.getPhoto);
 Router.put('/photos/:id', photoController.updatePhoto);
 Router.delete('/photos/:id', photoController.deletePhoto);

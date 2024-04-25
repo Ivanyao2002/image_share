@@ -10,20 +10,29 @@ const options = {
 }
 const {photoSchema, commentSchema, userSchema} = schemas
 
-mongoose.connect(db).then(() => console.log('Mongodb Connected'))
+const secret = 'qsdjS12ozn78ehdoIJ123DJOZJLDSCqsdeffdg123ER56SDFZedhWXojqshduzaohduihqsDAqsdq'; //clé secrète utilisée pour signer le jeton
 
-userSchema.statics.findByCredentials = async function (email) {
-    return this.findOne({ email});
+mongoose.connect(db).then(() => console.log('Connexion reussie à la base de données !')).catch(() => console.log("Erreur de connexion à la base de données !"))
+
+// Méthode static pour comparer les informations saisir et ceux de la BD
+userSchema.statics.findByCredentials = async function (username, password) {
+    const user = await this.findOne({ username});
+
+    if (!user) {
+        return null; // Utilisateur non trouvé
+    }
+    
+    if (user.password === password) {
+      return user; // Mot de passe correct, retourne le user
+    }
+    return null; // Utilisateur non trouvé avec des informations d'identification invalides
 };
 
 // Générer un jeton d'authentification (token) en utilisant une bibliothèque de génération de jetons comme jsonwebtoken
 userSchema.methods.generateAuthToken = async function () {
-      
-    const token = jwt.sign({ _id: this._id }, 'secret_key');
-    // "secret_key" devrait être remplacé par votre clé secrète réelle utilisée pour signer le jeton
-  
+    const token = jwt.sign({ _id: this._id, username: this.username }, secret); // { expiresIn: '1h' }
     return token;
-  };
+};
   
 // Création des modèles
 const User = mongoose.model('User', userSchema);
