@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Math.round(Math.random() * 100); // On génère des nombres aléatoire pour completer la fin du fichier
-      cb(null, file.fieldname + '_' + uniqueSuffix); // Nom des fichiers téléchargés
+      cb(null, file.originalname + '_' + uniqueSuffix); // Nom des fichiers téléchargés
     },
   });
 
@@ -24,6 +24,7 @@ const upload = multer({
 
 Router.get('/', (req, res) => {
     res.render('index')
+    console.log(req.session);
 })
 
 // Routes pour les utilisateurs
