@@ -1,10 +1,12 @@
 import model from '../models/mongo.js';
 import { createHash } from 'crypto'
 import { validationResult, body } from 'express-validator';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const {User} = model
 
-const secretKey = 'qsdjS12ozn78ehdoIJ123DJOZJLDSCqsdeffdg123ER56SDFZedhWXojqshduzaohduihqsDAqsdq'; //clé secrète utilisée pour signer le jeton
+const secretKey = process.env.SESSION_SECRET; //clé secrète utilisée pour signer le jeton
 
 // Règles de validation pour chaque champ du formulaire
 const bodyValidator = [
@@ -12,6 +14,14 @@ const bodyValidator = [
     body('email').notEmpty().withMessage('L\'adresse e-mail est requise').isEmail().withMessage('L\'adresse e-mail n\'est pas valide'),
     body('password').notEmpty().withMessage('Le mot de passe est requis').isLength({ min: 8 }).withMessage('Le mot de passe doit comporter au moins 8 caractères')
 ]
+
+const sessionMiddleware = (req, res, next) => {
+  if (!req.session.id_user) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
+};
 
 // Middleware pour securisé les routes avec verification du token
 const authMiddleware = (req, res, next) => {
@@ -36,8 +46,10 @@ const authMiddleware = (req, res, next) => {
 const register = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) { // Si Il y a des erreurs de validation
-      const errorMessages = errors.array().map(err => err.msg);
-      return res.status(400).json({ errors: errorMessages });
+      req.session.errors = errors.array().map(err => err.msg); // stocker les messages d'erreur dans la session avant de rediriger l'utilisateur vers la page d'inscription 
+      //const errorMessages = errors.array().map(err => err.msg);
+      //return res.status(400).json({ errors: errorMessages });
+      return res.redirect("/register");
     }
 
     try { // Si le formulaire est valide
@@ -46,10 +58,13 @@ const register = async (req, res) => {
       const avatar = "/uploads/" + req.file ? req.file.filename : null; // On recupère le nom du fichier de l'image ou null s'il n'y a pas d'image et on stocke dans le dossier 
       const user = new User({ username, email, password:safePwd , avatar}); // On cree une instance du modèle User
       await user.save();
-      res.redirect('/photos');
+      req.session.id_user = user._id
+      return res.redirect('/photos');
       //res.status(201).json(`User created : ${user}`);
     } catch (err) {
-      res.status(400).json({ message: err.message });
+      //res.status(400).json({ message: err.message });
+      req.session.errors = errors.array().map(err => err.msg);
+      res.redirect("/register");
     }
 };
 
@@ -64,8 +79,9 @@ const login = async (req, res) => {
       const token = await user.generateAuthToken();
       // On Stocke le token et l'utilisateur dans la session 
       req.session.token = token;
-      req.session.user = user;
+      //req.session.user = user;
         //res.json({ user, token });
+      req.session.id_user = user._id
       res.redirect('/photos');
     } catch (err) {
       res.status(400).json({ message: err.message });
@@ -87,11 +103,22 @@ const getLogin = (req, res) => {
 };
 
 const getRegister = (req, res) => {
-  res.render('register', { title: 'Espace membre'});
+  const errors = res.locals.errors; // récupérer les messages d'erreur de res.locals.errors et les afficher dans votre template de page d'inscription
+  res.render('register', { title: 'Espace membre', errors});
 };
 
+const logout = async (req, res) => {
+  req.session.destroy((err) => { // On detruit la session,  
+    if (err) { // Si il y'a erreur
+      return res.redirect("/"); // On retourne la page d'index
+    }
+    res.clearCookie(process.env.SESSION_NAME); // Si il n'y a pas d'erreur on efface les cookie 
+    res.redirect("/");
+  });
+}; 
 
+ 
 export default {
-  register, login, getLogin, getRegister, bodyValidator, authMiddleware
+  register, login, getLogin, getRegister, bodyValidator, authMiddleware, sessionMiddleware, logout
 };
 // (getUser, updateUser, deleteUser)

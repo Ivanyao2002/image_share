@@ -2,11 +2,19 @@
 	<html lang="fr">
     <%- include ('./partials/head') %>    
 	<body>
-		<%- include ('./partials/header') %>
 
 		<div class="container ">
 			<h1><%= title %></h1>
 			<br>
+            <div class="alert-danger">
+                <% if (errors && errors.length > 0) { %>
+                    <ul>
+                      <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                      <% }); %>
+                    </ul>
+                  <% } %>
+            </div>
 			<div id="login">
 				<form method="post" action="/register" enctype="multipart/form-data">
                     <legend class="text-center">Veuillez vous enregistrer</legend>
@@ -29,7 +37,7 @@
 
                     <div class="error-container"></div>
 					
-					<button type="submit" class="btn btn-outline-primary  m-3 w-25">Connexion</button>
+					<button type="submit" class="btn btn-outline-primary  m-3 w-25">Inscription</button>
 				</form>
 			</div>
 

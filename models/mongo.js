@@ -1,7 +1,8 @@
 import mongoose from 'mongoose'
-import { createHash } from 'crypto'
 import jwt from 'jsonwebtoken';
 import schemas from './schemas.js'
+import dotenv from 'dotenv';
+dotenv.config();
 
 const db = 'mongodb://127.0.0.1:27017/shared' 
 const options = {
@@ -10,14 +11,14 @@ const options = {
 }
 const {photoSchema, commentSchema, userSchema} = schemas
 
-const secret = 'qsdjS12ozn78ehdoIJ123DJOZJLDSCqsdeffdg123ER56SDFZedhWXojqshduzaohduihqsDAqsdq'; //clé secrète utilisée pour signer le jeton
+const secret =  process.env.SESSION_SECRET; //clé secrète utilisée pour signer le jeton
 
 mongoose.connect(db).then(() => console.log('Connexion reussie à la base de données !')).catch(() => console.log("Erreur de connexion à la base de données !"))
 
 // Méthode static pour comparer les informations saisir et ceux de la BD
 userSchema.statics.findByCredentials = async function (username, password) {
     const user = await this.findOne({ username});
-
+ 
     if (!user) {
         return null; // Utilisateur non trouvé
     }

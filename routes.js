@@ -5,7 +5,7 @@ import photoController from './controllers/photoController.js';
 import commentController from './controllers/commentController.js';
 
 const Router = express.Router()
-const {register, login, getLogin, getRegister} = userController
+const {register, login, getLogin, getRegister, sessionMiddleware, logout} = userController
 const {getAllPhotos, addPhoto} = photoController
 
 const storage = multer.diskStorage({
@@ -13,14 +13,14 @@ const storage = multer.diskStorage({
       cb(null, "./public/uploads/"); // Répertoire de destination pour les fichiers téléchargés
     },
     filename: (req, file, cb) => {
-      const uniqueSuffix = Math.round(Math.random() * 100); // On génère des nombres aléatoire pour completer la fin du fichier
-      cb(null, file.originalname + '_' + uniqueSuffix); // Nom des fichiers téléchargés
+      const uniquePrefixe = Math.round(Math.random() * 100); // On génère des nombres aléatoire pour completer le debut du fichier
+      cb(null, uniquePrefixe + '_' + file.originalname); // Nom des fichiers téléchargés
     },
   });
 
 const upload = multer({
     storage: storage, // Répertoire de destination pour les fichiers téléchargés
-  });
+});
 
 Router.get('/', (req, res) => {
     res.render('index')
@@ -30,12 +30,13 @@ Router.get('/', (req, res) => {
 // Routes pour les utilisateurs
 Router.post('/register', upload.single('avatar'), register);
 Router.post('/login', login);
-Router.get('/login', getLogin)
-Router.get('/register', getRegister)
+Router.get('/login', getLogin);
+Router.get('/register', getRegister);
+Router.post('/logout', logout);
 
 // Routes pour les photos
-Router.post('/photos', upload.single('imageUrl'), addPhoto); 
-Router.get('/photos', getAllPhotos);
+Router.post('/photos', sessionMiddleware, upload.single('imageUrl'), addPhoto); 
+Router.get('/photos', sessionMiddleware, getAllPhotos);
 
 /*
 Router.get('/users', userController.getAllUsers);
