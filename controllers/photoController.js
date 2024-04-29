@@ -2,10 +2,14 @@ import model from '../models/mongo.js';
 
 const {Photo} = model
 
-const getAllPhotos = (req, res) => {
-    console.log(req.session);
-    const { user } = res.locals; // On recupère depuis local l'utilisateur
-    res.render('pictures', {user});
+const getAllPhotos = async (req, res) => {
+    try {
+      const { user } = res.locals; // On recupère depuis local l'utilisateur
+      const photos = await Photo.find(); // On recupère les photos 
+      res.render('pictures', { user, photos });
+    } catch (error) {
+      res.status(500).json({ message: 'Une erreur s\'est produite lors de la récupération des photos' });
+    } 
 };
 
 const addPhoto = (req, res) => {
@@ -22,7 +26,12 @@ const addPhoto = (req, res) => {
     newImage.save()
     //.then(image => res.status(201).json("New image added"))
     //.catch(error => res.status(500).json({ message: error }));
-    .then(image => res.render('pictures', {image}))
+    //.then(image => res.render('pictures', {image}))
+    .then(() => {
+        Photo.find()
+          .then(photos => res.render('pictures', { photos }))
+          .catch(error => res.status(500).json({ message: error }));
+      })
     .catch(error => res.status(500).json({ message: error }));
 };
 

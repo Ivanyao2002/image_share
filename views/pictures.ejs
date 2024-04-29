@@ -39,6 +39,25 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <% if (photos && photos.length > 0) { %>
+                <% photos.forEach(photo => { %>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <img src="/public/uploads/<%= photo.imageUrl %>" class="card-img-top" alt="<%= photo.title %>">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= photo.title %></h5>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <p>Aucune image disponible</p>
+                </div>
+            <% } %>
+        </div>
     </div>
 
     <%- include('./partials/footer') %>
