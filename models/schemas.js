@@ -1,6 +1,6 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 // Schéma Utilisateur
 const userSchema = new Schema({
@@ -9,28 +9,40 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     avatar: { type: String },
     createdAt: { type: Date, default: Date.now }
-  }, {collection: 'users'});
+}, {collection: 'users'});
+  
+  
+// Schéma Photo
+const photoSchema = new Schema({
+  title: { type: String, required: true },
+  //description: { type: String },
+  imageUrl: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  likes: [{
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  }],
+  dislikes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  comments: [{
+    text: String,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  }],
+}, {collection: 'photos'});
 
   
-  // Schéma Photo
-  const photoSchema = new Schema({
-    title: { type: String, required: true },
-    //description: { type: String },
-    imageUrl: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    dislikes: [{ type: Schema.Types.ObjectId, ref: 'User' }]
-  }, {collection: 'photos'});
-
-  
-  // Schéma Commentaire
-  const commentSchema = new Schema({
-    contenu: { type: String, required: true },
-    createdAt: { type: Date, default: Date.now },
-    photo: { type: Schema.Types.ObjectId, ref: 'Photo', required: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true }
-  }, {collection: 'comments'});
+// Schéma Commentaire
+const commentSchema = new Schema({
+  contenu: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  photo: { type: Schema.Types.ObjectId, ref: 'Photo', required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: true }
+}, {collection: 'comments'});
 
 
-  export default {userSchema, photoSchema, commentSchema}
+export default {userSchema, photoSchema, commentSchema};

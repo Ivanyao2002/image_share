@@ -1,19 +1,19 @@
-import express from 'express'
-import bodyParser from 'body-parser'
-import Router from './routes.js'
+import express from 'express';
+import bodyParser from 'body-parser';
+import Router from './routes.js';
 import model from './models/mongo.js';
-import './models/mongo.js'
-import session from 'express-session'
+import './models/mongo.js';
+import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const {User} = model
+const {User} = model;
 
-const app = express()
-const port = 5000
+const app = express();
+const port = 5000;
 
-app.set('views', './views') 
-app.set('view engine', 'ejs')
+app.set('views', './views') ;
+app.set('view engine', 'ejs');
 
 //configuration du middleware de session pour acceder aux sessions des utilisateurs (les données de la session sont enregistrer au niveau du server et renvoyé dans les requette http à travers les cookies(stocke l'id de la session) )
 app.use(session({
@@ -50,14 +50,12 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/public', express.static('public'))
+app.use('/public', express.static('public'));
 
-app.use(bodyParser.json()) // On parse du json 
-app.use(bodyParser.urlencoded({ extended: true })) //on encode l'url
-app.use('/', Router)
+app.use(bodyParser.json()); // On parse du json 
+app.use(bodyParser.urlencoded({ extended: true })); //on encode l'url
+app.use('/', Router);
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`)
-})
-
-console.log(new Date().toLocaleString());
+  console.log(`App listening on port ${port}`);
+});

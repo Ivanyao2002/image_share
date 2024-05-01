@@ -1,10 +1,10 @@
 import model from '../models/mongo.js';
-import { createHash } from 'crypto'
+import { createHash } from 'crypto';
 import { validationResult, body } from 'express-validator';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const {User} = model
+const {User} = model;
 
 const secretKey = process.env.SESSION_SECRET; //clé secrète utilisée pour signer le jeton
 
@@ -13,7 +13,7 @@ const bodyValidator = [
     body('username').notEmpty().withMessage('Le nom d\'utilisateur est requis'),
     body('email').notEmpty().withMessage('L\'adresse e-mail est requise').isEmail().withMessage('L\'adresse e-mail n\'est pas valide'),
     body('password').notEmpty().withMessage('Le mot de passe est requis').isLength({ min: 8 }).withMessage('Le mot de passe doit comporter au moins 8 caractères')
-]
+];
 
 const sessionMiddleware = (req, res, next) => {
   if (!req.session.id_user) {
@@ -54,11 +54,11 @@ const register = async (req, res) => {
 
     try { // Si le formulaire est valide
       const { username, email, password } = req.body;
-      const safePwd = createHash('sha512').update(password).digest('base64')
+      const safePwd = createHash('sha512').update(password).digest('base64');
       const avatar = "/uploads/" + req.file ? req.file.filename : null; // On recupère le nom du fichier de l'image ou null s'il n'y a pas d'image et on stocke dans le dossier 
       const user = new User({ username, email, password:safePwd , avatar}); // On cree une instance du modèle User
       await user.save();
-      req.session.id_user = user._id
+      req.session.id_user = user._id;
       return res.redirect('/photos');
       //res.status(201).json(`User created : ${user}`);
     } catch (err) {
@@ -71,7 +71,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
       const { username, password } = req.body;
-      const safePwd = createHash('sha512').update(password).digest('base64')
+      const safePwd = createHash('sha512').update(password).digest('base64');
       const user = await User.findByCredentials(username, safePwd);
       if (!user) {
         return res.status(401).json({ message: 'Idebtifiants invalides !!' });
@@ -81,7 +81,7 @@ const login = async (req, res) => {
       req.session.token = token;
       //req.session.user = user;
         //res.json({ user, token });
-      req.session.id_user = user._id
+      req.session.id_user = user._id;
       res.redirect('/photos');
     } catch (err) {
       res.status(400).json({ message: err.message });
