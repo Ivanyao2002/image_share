@@ -25,7 +25,6 @@ const photoSchema = new Schema({
       ref: 'User'
     }
   }],
-  dislikes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   comments: [{
     text: String,
     user: {
@@ -35,14 +34,4 @@ const photoSchema = new Schema({
   }],
 }, {collection: 'photos'});
 
-  
-// Schéma Commentaire
-const commentSchema = new Schema({
-  contenu: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  photo: { type: Schema.Types.ObjectId, ref: 'Photo', required: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true }
-}, {collection: 'comments'});
-
-
-export default {userSchema, photoSchema, commentSchema};
+export default {userSchema, photoSchema};

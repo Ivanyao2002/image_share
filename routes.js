@@ -5,7 +5,7 @@ import photoController from './controllers/photoController.js';
 
 const Router = express.Router();
 const {register, login, getLogin, getRegister, sessionMiddleware, logout} = userController;
-const {getAllPhotos, addPhoto, addComment, addLike} = photoController;
+const {getAllPhotos, addPhoto, addComment, addLike, putPhoto, deletePhoto} = photoController;
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -36,6 +36,9 @@ Router.post('/logout', logout);
 // Routes pour les photos
 Router.post('/photos', sessionMiddleware, upload.single('imageUrl'), addPhoto); 
 Router.get('/photos', sessionMiddleware, getAllPhotos);
+Router.put('/photos/:photoId', sessionMiddleware, putPhoto);
+Router.delete('/photos/:photoId', sessionMiddleware, deletePhoto);
+
 
 // Routes pour les commentaires
 Router.post('/photos/:photoId/comments', sessionMiddleware, addComment);
@@ -50,13 +53,10 @@ Router.delete('/users/:id', userController.deleteUser);
 
 
 Router.get('/photos/:id', photoController.getPhoto);
-Router.put('/photos/:id', photoController.updatePhoto);
-Router.delete('/photos/:id', photoController.deletePhoto);
 
 // Routes pour les commentaires
-Router.post('/photos/:photoId/comments', commentController.createComment);
 Router.get('/photos/:photoId/comments', commentController.getComments);
 Router.put('/comments/:id', commentController.updateComment);
 Router.delete('/comments/:id', commentController.deleteComment);*/
-
-export default Router;
+ 
+export default Router; 

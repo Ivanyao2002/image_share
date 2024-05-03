@@ -9,7 +9,7 @@ const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true
 };
-const {photoSchema, commentSchema, userSchema} = schemas;
+const {photoSchema, userSchema} = schemas;
 
 const secret =  process.env.SESSION_SECRET; //clé secrète utilisée pour signer le jeton
 
@@ -38,6 +38,5 @@ userSchema.methods.generateAuthToken = async function () {
 // Création des modèles
 const User = mongoose.model('User', userSchema);
 const Photo = mongoose.model('Photo', photoSchema);
-const Comment = mongoose.model('Comment', commentSchema);
 
-export default {User, Photo, Comment};
+export default {User, Photo};

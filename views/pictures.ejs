@@ -47,7 +47,6 @@
                         <div class="card mb-4">
                             <img src="/public/uploads/<%= photo.imageUrl %>" class="card-img-top" alt="<%= photo.title %>">
                             <div class="card-body">
-                                <h5 class="card-title"><%= photo.title %></h5>
                                 <p>Likes: <%= photo.likes.length %></p>
                                 <% photo.comments.forEach(comment => { %>
                                   <p><strong><%= comment.user.username %>:</strong> <%= comment.text %></p>
@@ -67,6 +66,20 @@
                                             </form>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <% if (user.id == photo.user) { %>
+                                        <div class="col-md-6">
+                                            <h5 class="card-title">
+                                                <%= photo.title %> 
+                                                <button type="button" class="btn btn-sm btn-primary edit-button" data-photo-id="<%= photo._id %>">Modifier</button>
+                                            </h5>
+                                            
+                                        </div>
+                                        <div class="col-md-6">
+                                            <button type="button" class="btn btn-danger btn-sm delete-button" data-photo-id="<%= photo._id %>">Supprimer</button>
+                                        </div>
+                                        <% } %>
+                                    </div>
                             </div>
 
                         </div>
@@ -81,47 +94,6 @@
     </div>
 
     <%- include('./partials/footer') %>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('.comment-form').submit(function(event) {
-                event.preventDefault();
-                console.log(event, "op");
-                var formData = $(this).serialize(); // Récupère les données du formulaire
 
-                $.ajax({
-                url: $(this).attr('action'), // URL de l'action du formulaire
-                type: $(this).attr('method'), // Méthode du formulaire (POST)
-                data: formData, // Données du formulaire sérialisées
-                success: function(response) {
-                    location.reload();
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-                });
-            });
-
-            $('.like-form').submit(function(event) {
-                event.preventDefault();
-
-                var formData = $(this).serialize(); // Récupère les données du formulaire
-                var likeButton = $(this).find('.like-button'); // sélectionner le bouton "Like" spécifique dans le formulaire actuel
-
-                $.ajax({
-                url: $(this).attr('action'), // URL de l'action du formulaire
-                type: $(this).attr('method'), // Méthode du formulaire (POST)
-                data: formData, // Données du formulaire sérialisées
-                success: function(response) {
-                // Par exemple, pour rendre le bouton "Like" bleu, vous pouvez ajouter une classe CSS
-                likeButton.toggleClass('liked');
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-                });
-            });
-        });
-    </script>
 </body>
 </html>

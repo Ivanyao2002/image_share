@@ -99,7 +99,40 @@ const addLike = (req, res) => {
     });
 };
 
+const putPhoto = (req, res) => {
+  let photoId = req.params.photoId;
+  let newTitle = req.body.title;
+
+  // Vérifier si l'utilisateur est autorisé à modifier la photo
+  if (req.user && req.user.id === photo.userId) {
+    // Effectuer les opérations de mise à jour du titre de la photo dans la base de données
+    // ...
+
+    // Envoyer une réponse de succès
+    res.sendStatus(200);
+  } else {
+    // L'utilisateur n'est pas autorisé à effectuer cette action
+    res.sendStatus(403);
+  }
+};
+
+const deletePhoto = (req, res) => {
+  let photoId = req.params.photoId;
+
+  // Vérifier si l'utilisateur est autorisé à supprimer la photo
+  if (req.user && req.user.id === photo.userId) {
+    // Effectuer les opérations de suppression de la photo dans la base de données
+    // ...
+
+    // Envoyer une réponse de succès
+    res.sendStatus(200);
+  } else {
+    // L'utilisateur n'est pas autorisé à effectuer cette action
+    res.sendStatus(403);
+  }
+}
+
 
 export default {
-    getAllPhotos, addPhoto, addComment, addLike
+    getAllPhotos, addPhoto, addComment, addLike, deletePhoto, putPhoto
 };
