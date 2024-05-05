@@ -47,8 +47,6 @@ const register = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) { // Si Il y a des erreurs de validation
       req.session.errors = errors.array().map(err => err.msg); // stocker les messages d'erreur dans la session avant de rediriger l'utilisateur vers la page d'inscription 
-      //const errorMessages = errors.array().map(err => err.msg);
-      //return res.status(400).json({ errors: errorMessages });
       return res.redirect("/register");
     }
 
@@ -60,9 +58,7 @@ const register = async (req, res) => {
       await user.save();
       req.session.id_user = user._id;
       return res.redirect('/photos');
-      //res.status(201).json(`User created : ${user}`);
     } catch (err) {
-      //res.status(400).json({ message: err.message });
       req.session.errors = errors.array().map(err => err.msg);
       res.redirect("/register");
     }
@@ -79,7 +75,6 @@ const login = async (req, res) => {
       const token = await user.generateAuthToken();
       // On Stocke le token et l'utilisateur dans la session 
       req.session.token = token;
-      //req.session.user = user;
         //res.json({ user, token });
       req.session.id_user = user._id;
       res.redirect('/photos');
@@ -87,16 +82,6 @@ const login = async (req, res) => {
       res.status(400).json({ message: err.message });
     }  
 }; 
-
-
-/*const getAllUsers = async (req, res) => {
-    try {
-      const users = await User.find();
-      res.json(users);
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-};*/
 
 const getLogin = (req, res) => {
   res.render('login', { title: 'Espace membre'});
@@ -121,4 +106,3 @@ const logout = async (req, res) => {
 export default {
   register, login, getLogin, getRegister, bodyValidator, authMiddleware, sessionMiddleware, logout
 };
-// (getUser, updateUser, deleteUser)

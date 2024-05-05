@@ -95,5 +95,89 @@
 
     <%- include('./partials/footer') %>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.comment-form').submit(function(event) {
+                event.preventDefault();
+                console.log(event, "op");
+                var formData = $(this).serialize(); // Récupère les données du formulaire
+
+                $.ajax({
+                url: $(this).attr('action'), // URL de l'action du formulaire
+                type: $(this).attr('method'), // Méthode du formulaire (POST)
+                data: formData, // Données du formulaire sérialisées
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+                });
+            });
+
+            $('.like-form').submit(function(event) {
+                event.preventDefault();
+
+                var formData = $(this).serialize(); // Récupère les données du formulaire
+                var likeButton = $(this).find('.like-button'); // sélectionner le bouton "Like" spécifique dans le formulaire actuel
+
+                $.ajax({
+                url: $(this).attr('action'), // URL de l'action du formulaire
+                type: $(this).attr('method'), // Méthode du formulaire (POST)
+                data: formData, // Données du formulaire sérialisées
+                success: function(response) {
+                // Par exemple, pour rendre le bouton "Like" bleu, vous pouvez ajouter une classe CSS
+                likeButton.toggleClass('liked');
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+                });
+            });
+
+            // Gestionnaire de clic sur le bouton "Modifier"
+            $('.edit-button').click(function() {
+                var photoId = $(this).data('photo-id');
+                var newTitle = prompt('Entrez le nouveau titre de la photo :');
+
+                if (newTitle) {
+                    $.ajax({
+                        url: '/photos' + photoId,
+                        type: 'PUT',
+                        data: { title: newTitle },
+                        success: function(response) {
+                        // Mettre à jour le titre de la photo dans l'interface utilisateur
+                        $('.card[data-photo-id="' + photoId + '"] .card-title').text(newTitle);
+                        },
+                        error: function(error) {
+                        console.log(error);
+                        }
+                    });
+                }
+            });
+
+            // Gestionnaire de clic sur le bouton "Supprimer"
+            $('.delete-button').click(function() {
+                var photoId = $(this).data('photo-id');
+                var confirmation = confirm('Voulez-vous vraiment supprimer cette photo ?');
+
+                if (confirmation) {
+                $.ajax({
+                    url: '/photos/' + photoId,
+                    type: 'DELETE',
+                    success: function(response) {
+                    // Supprimer la carte de la photo de l'interface utilisateur
+                    $('.card[data-photo-id="' + photoId + '"]').remove();
+                    },
+                    error: function(error) {
+                    console.log(error);
+                    }
+                });
+                }
+            });            
+        });
+    </script>
+
 </body>
 </html>

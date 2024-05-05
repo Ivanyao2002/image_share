@@ -106,10 +106,15 @@ const putPhoto = (req, res) => {
   // Vérifier si l'utilisateur est autorisé à modifier la photo
   if (req.user && req.user.id === photo.userId) {
     // Effectuer les opérations de mise à jour du titre de la photo dans la base de données
-    // ...
-
-    // Envoyer une réponse de succès
-    res.sendStatus(200);
+    Photo.findByIdAndUpdate(photoId, { title: newTitle })
+      .then(() => {
+        // Mise à jour réussie, envoyer une réponse de succès
+        res.sendStatus(200);
+      })
+      .catch(error => {
+        // Une erreur s'est produite lors de la mise à jour de la photo
+        res.status(500).json({ message: 'Erreur lors de la mise à jour de la photo' });
+      });
   } else {
     // L'utilisateur n'est pas autorisé à effectuer cette action
     res.sendStatus(403);
@@ -122,17 +127,21 @@ const deletePhoto = (req, res) => {
   // Vérifier si l'utilisateur est autorisé à supprimer la photo
   if (req.user && req.user.id === photo.userId) {
     // Effectuer les opérations de suppression de la photo dans la base de données
-    // ...
-
-    // Envoyer une réponse de succès
-    res.sendStatus(200);
+    Photo.findByIdAndDelete(photoId)
+      .then(() => {
+        // Suppression réussie, envoyer une réponse de succès
+        res.sendStatus(200);
+      })
+      .catch(error => {
+        // Une erreur s'est produite lors de la suppression de la photo
+        res.status(500).json({ message: 'Erreur lors de la suppression de la photo' });
+      });
   } else {
     // L'utilisateur n'est pas autorisé à effectuer cette action
     res.sendStatus(403);
-  }
-}
-
-
+  } 
+};
+ 
 export default {
     getAllPhotos, addPhoto, addComment, addLike, deletePhoto, putPhoto
 };
