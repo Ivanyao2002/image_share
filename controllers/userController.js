@@ -17,11 +17,11 @@ const bodyValidator = [
 
 const sessionMiddleware = (req, res, next) => {
   if (!req.session.id_user) {
-    res.redirect("/login");
+    res.redirect("/login"); 
   } else {
-    next();
+    next(); 
   }
-};
+};   
 
 // Middleware pour securisé les routes avec verification du token
 const authMiddleware = (req, res, next) => {

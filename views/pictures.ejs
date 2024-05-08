@@ -44,42 +44,46 @@
             <% if (photos && photos.length > 0) { %>
                 <% photos.forEach(photo => { %>
                     <div class="col-md-4">
-                        <div class="card mb-4">
-                            <img src="/public/uploads/<%= photo.imageUrl %>" class="card-img-top" alt="<%= photo.title %>">
+                        <div class="card-header bg-secondary">
+                            <div class="row">
+                                <% if (user.id == photo.user) { %>
+                                <div class="col-md-6">
+                                    <h5 class="card-title">
+                                        <span class="newTitle"><%= photo.title %> </span>
+                                        <button type="button" class="btn btn-sm btn-primary edit-button" data-photo-id="<%= photo._id %>">Modifier</button>
+                                    </h5>
+                                    
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-danger btn-sm delete-button" data-photo-id="<%= photo._id %>">Supprimer</button>
+                                </div>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div class="card mb-4" style="height: 500px;">
+                            <img src="/public/uploads/<%= photo.imageUrl %>" class="card-img-top" alt="<%= photo.title %>" height="250px">
                             <div class="card-body">
                                 <p>Likes: <%= photo.likes.length %></p>
                                 <% photo.comments.forEach(comment => { %>
                                   <p><strong><%= comment.user.username %>:</strong> <%= comment.text %></p>
                                 <% }); %>
-                                    <div class="row">
-                                        <div class="col-md-10">
-                                            <form class="comment-form" action="/photos/:photoId/comments" method="POST">
-                                                <input type="hidden" name="photoId" value="<%= photo._id %>">
-                                                <input type="text" name="commentText" placeholder="Ajouter un commentaire">
-                                                <button type="submit">ok</button>
-                                              </form> 
-                                        </div>
-                                        <div class="col-md-2">
-                                            <form class="like-form" action="/photos/<%= photo._id %>/likes" method="POST">
-                                                <input type="hidden" name="photoId" value="<%= photo._id %>">
-                                                <button type="submit" id="like-button">Like</button>
-                                            </form>
-                                        </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <form class="comment-form" action="/photos/:photoId/comments" method="POST">
+                                            <input type="hidden" name="photoId" value="<%= photo._id %>">
+                                            <input type="text" name="commentText" placeholder="Ajouter un commentaire">
+                                            <button type="submit">ok</button>
+                                          </form> 
                                     </div>
-                                    <div class="row">
-                                        <% if (user.id == photo.user) { %>
-                                        <div class="col-md-6">
-                                            <h5 class="card-title">
-                                                <%= photo.title %> 
-                                                <button type="button" class="btn btn-sm btn-primary edit-button" data-photo-id="<%= photo._id %>">Modifier</button>
-                                            </h5>
-                                            
-                                        </div>
-                                        <div class="col-md-6">
-                                            <button type="button" class="btn btn-danger btn-sm delete-button" data-photo-id="<%= photo._id %>">Supprimer</button>
-                                        </div>
-                                        <% } %>
+                                    <div class="col-md-2">
+                                        <form class="like-form" action="/photos/<%= photo._id %>/likes" method="POST">
+                                            <input type="hidden" name="photoId" value="<%= photo._id %>">
+                                            <button type="submit" id="like-button">Like</button>
+                                        </form>
                                     </div>
+                                </div>
                             </div>
 
                         </div>
@@ -116,66 +120,47 @@
                 });
             });
 
-            $('.like-form').submit(function(event) {
-                event.preventDefault();
 
-                var formData = $(this).serialize(); // Récupère les données du formulaire
-                var likeButton = $(this).find('.like-button'); // sélectionner le bouton "Like" spécifique dans le formulaire actuel
-
-                $.ajax({
-                url: $(this).attr('action'), // URL de l'action du formulaire
-                type: $(this).attr('method'), // Méthode du formulaire (POST)
-                data: formData, // Données du formulaire sérialisées
-                success: function(response) {
-                // Par exemple, pour rendre le bouton "Like" bleu, vous pouvez ajouter une classe CSS
-                likeButton.toggleClass('liked');
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-                });
-            });
-
-            // Gestionnaire de clic sur le bouton "Modifier"
-            $('.edit-button').click(function() {
+            $('.edit-button').on('click', function() {
                 var photoId = $(this).data('photo-id');
                 var newTitle = prompt('Entrez le nouveau titre de la photo :');
 
-                if (newTitle) {
-                    $.ajax({
-                        url: '/photos' + photoId,
-                        type: 'PUT',
-                        data: { title: newTitle },
-                        success: function(response) {
-                        // Mettre à jour le titre de la photo dans l'interface utilisateur
-                        $('.card[data-photo-id="' + photoId + '"] .card-title').text(newTitle);
-                        },
-                        error: function(error) {
-                        console.log(error);
-                        }
-                    });
+                $.ajax({
+                url: '/photos/' + photoId,
+                type: 'PUT',
+                data: { title: newTitle },
+                success: function(response) {
+                    console.log(response.message);
+                    $(this).parent().find('.newTitle').text(newTitle);
+                    location.reload();
+                },
+                error: function(error) {
+                    console.error(error);
+                    // Traiter l'erreur
                 }
+                });
             });
-
-            // Gestionnaire de clic sur le bouton "Supprimer"
-            $('.delete-button').click(function() {
+ 
+            // Gestionnaire de clic sur le bouton "Supprimer"            
+            $('.delete-button').on('click', function() {
                 var photoId = $(this).data('photo-id');
                 var confirmation = confirm('Voulez-vous vraiment supprimer cette photo ?');
 
                 if (confirmation) {
-                $.ajax({
-                    url: '/photos/' + photoId,
-                    type: 'DELETE',
-                    success: function(response) {
-                    // Supprimer la carte de la photo de l'interface utilisateur
-                    $('.card[data-photo-id="' + photoId + '"]').remove();
-                    },
-                    error: function(error) {
-                    console.log(error);
-                    }
-                });
+                    $.ajax({
+                        url: '/photos/' + photoId,
+                        type: 'DELETE',
+                        success: function(response) {
+                            console.log(response.message);
+                            location.reload();
+                        },
+                        error: function(error) {
+                            console.error(error);
+                            // Traiter l'erreur
+                        }
+                    });
                 }
-            });            
+            });
         });
     </script>
 

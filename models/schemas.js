@@ -30,7 +30,8 @@ const photoSchema = new Schema({
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
-    }
+    },
+    username: String
   }],
 }, {collection: 'photos'});
 
