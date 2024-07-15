@@ -2,6 +2,7 @@ import model from '../models/mongo.js';
 import { createHash } from 'crypto';
 import { validationResult, body } from 'express-validator';
 import dotenv from 'dotenv';
+import axios from 'axios';
 dotenv.config();
 
 const {User} = model;
@@ -65,23 +66,33 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-    try {
-      const { username, password } = req.body;
-      const safePwd = createHash('sha512').update(password).digest('base64');
-      const user = await User.findByCredentials(username, safePwd);
-      if (!user) {
-        return res.status(401).json({ message: 'Idebtifiants invalides !!' });
+  try {
+    const { email, password } = req.body;
+    const safePwd = createHash('sha512').update(password).digest('base64');
+    const user = await User.findByCredentials(email, safePwd);
+    if (!user) {
+      return res.status(401).json({ message: 'Identifiants invalides !!' });
+    }
+
+    // Connexion réussie, envoyez la requête à l'API OTP
+    const otpResponse = await axios.post('http://localhost:8000/otp/generate/', {
+      email: user.email // Utilisez l'email de l'utilisateur connecté
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
       }
-      const token = await user.generateAuthToken();
-      // On Stocke le token et l'utilisateur dans la session 
-      req.session.token = token;
-        //res.json({ user, token });
-      req.session.id_user = user._id;
-      res.redirect('/photos');
-    } catch (err) {
-      res.status(400).json({ message: err.message });
-    }  
-}; 
+    });
+
+    // Retourner une réponse de succès
+    res.status(200).json({
+      message: 'Connexion réussie. OTP envoyé.',
+      otpResponse: otpResponse.data
+    });
+
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
 const getLogin = (req, res) => {
   res.render('login', { title: 'Espace membre'});

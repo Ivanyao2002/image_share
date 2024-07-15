@@ -16,16 +16,19 @@ const secret =  process.env.SESSION_SECRET; //clé secrète utilisée pour signe
 mongoose.connect(db).then(() => console.log('Connexion reussie à la base de données !')).catch(() => console.log("Erreur de connexion à la base de données !"));
 
 // Méthode static pour comparer les informations saisir et ceux de la BD
-userSchema.statics.findByCredentials = async function (username, password) {
-    const user = await this.findOne({ username});
+userSchema.statics.findByCredentials = async function (email, password) {
+    const user = await this.findOne({ email });
  
     if (!user) {
+        console.log('Utilisateur non trouvé');
         return null; // Utilisateur non trouvé
     }
     
     if (user.password === password) {
+      console.log('Mot de passe correct, retourne le user');
       return user; // Mot de passe correct, retourne le user
     }
+    console.log('Utilisateur non trouvé avec des informations d\'identification invalides');
     return null; // Utilisateur non trouvé avec des informations d'identification invalides
 };
 
